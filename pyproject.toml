@@ -1,0 +1,11 @@
+[project]
+name = "katachi"
+version = "0.1.0"
+description = "very simple pngtuber avatar script!"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pyaudio>=0.2.14",
+    "pygame>=2.6.1",
+    "scipy>=1.15.3",
+]
