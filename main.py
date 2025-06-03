@@ -4,10 +4,10 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 
 from transforms import BounceController, BlinkController, BreathingController, BREATHING_HEIGHT
-from audio import AudioController, VOICE_THRESHOLD
+from audio import AudioController
 
 
-WINDOW_WIDTH, WINDOW_HEIGHT = 720, 720
+WINDOW_WIDTH, WINDOW_HEIGHT = 1024, 1024
 AVATAR_SCALE = 0.9
 
 VOLUME_BAR_WIDTH = 500
