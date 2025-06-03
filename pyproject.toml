@@ -7,5 +7,4 @@ requires-python = ">=3.13"
 dependencies = [
     "pyaudio>=0.2.14",
     "pygame>=2.6.1",
-    "scipy>=1.15.3",
 ]
