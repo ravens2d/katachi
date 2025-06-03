@@ -2,9 +2,6 @@ from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 import pygame
-import pyaudio
-import numpy as np
-import threading
 
 from transforms import BounceController, BlinkController, BreathingController, BREATHING_HEIGHT
 from audio import AudioController, VOICE_THRESHOLD
