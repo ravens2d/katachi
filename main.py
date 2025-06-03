@@ -1,5 +1,5 @@
-from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 import pygame
 
@@ -45,6 +45,7 @@ class Avatar:
         self.blink.update(delta_time)
         self.breathing.update(delta_time)
 
+        self.audio.update()
         talking, volume = self.audio.get_data()
         if talking != self.talking and not self.talking:
             self.bounce.trigger()
@@ -118,3 +119,5 @@ if __name__ == '__main__':
         screen.fill((0, 188, 0))
         avatar.draw(screen)
         pygame.display.flip()
+
+        # clock.tick_busy_loop(60)
