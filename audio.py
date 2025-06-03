@@ -13,6 +13,7 @@ class AudioController:
 
         self.talking = False
         self.volume = 0
+        self.threshold = VOICE_THRESHOLD
 
         self.audio = pyaudio.PyAudio()
         self.stream = self.audio.open(
@@ -42,7 +43,10 @@ class AudioController:
             if mean_squared > 0 and not np.isnan(mean_squared) and not np.isinf(mean_squared):
                 self.volume = np.sqrt(mean_squared)
             
-            self.talking = self.volume > VOICE_THRESHOLD
+            self.talking = self.volume > self.threshold
+    
+    def set_threshold(self, new_threshold):
+        self.threshold = new_threshold
     
     def get_data(self):
         return self.talking, self.volume

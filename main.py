@@ -13,12 +13,17 @@ from audio import AudioController, VOICE_THRESHOLD
 WINDOW_WIDTH, WINDOW_HEIGHT = 720, 720
 AVATAR_SCALE = 0.9
 
+VOLUME_BAR_WIDTH = 500
+VOLUME_BAR_HEIGHT = 20
+VOLUME_MAX = 2000
+
 STATES = [
     "idle",
     "talking",
     "idle_blink",
     "talking_blink",
 ]
+
 
 class Avatar:
     def __init__(self):
@@ -70,9 +75,15 @@ class Avatar:
         if self.talking:
             bar_color = (255, 0, 0)
 
-        pygame.draw.rect(screen, (100, 100, 100), (10, 10, 300, 20))
-        pygame.draw.rect(screen, bar_color, (10, 10, min(self.volume, 1000) / 1000 * 300, 20))
-        pygame.draw.line(screen, (255, 255, 255), (VOICE_THRESHOLD / 1000 * 300, 10), (VOICE_THRESHOLD / 1000 * 300, 30), 2)
+        pygame.draw.rect(screen, (100, 100, 100), (10, 10, VOLUME_BAR_WIDTH, VOLUME_BAR_HEIGHT))
+        pygame.draw.rect(screen, bar_color, (10, 10, min(self.volume, VOLUME_MAX) / VOLUME_MAX * VOLUME_BAR_WIDTH, VOLUME_BAR_HEIGHT))
+        pygame.draw.line(screen, (255, 255, 255), (self.audio.threshold / VOLUME_MAX * VOLUME_BAR_WIDTH + 10, 10), (self.audio.threshold / VOLUME_MAX * VOLUME_BAR_WIDTH + 10, 30), 2)
+    
+    def handle_volume_bar_click(self, mouse_pos):
+        mouse_x, mouse_y = mouse_pos
+        if 10 <= mouse_x <= 10 + VOLUME_BAR_WIDTH and 10 <= mouse_y <= 10 + VOLUME_BAR_HEIGHT:
+            new_threshold = (mouse_x - 10) / VOLUME_BAR_WIDTH * VOLUME_MAX
+            self.audio.set_threshold(new_threshold)
 
     def stop(self):
         self.audio.stop()
@@ -97,6 +108,9 @@ if __name__ == '__main__':
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     avatar.bounce.trigger()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1: # left
+                    avatar.handle_volume_bar_click(event.pos)
     
         new_ticks = pygame.time.get_ticks()
         delta_time = (new_ticks - ticks) / 1000
