@@ -9,6 +9,9 @@ BLINK_DURATION = 0.15
 BLINK_INTERVAL_MIN = 1.0
 BLINK_INTERVAL_MAX = 4.0
 
+BREATHING_HEIGHT = 10
+BREATHING_SPEED = 0.5
+
 
 class BounceController:
     def __init__(self):
@@ -49,3 +52,17 @@ class BlinkController:
 
     def get_blinking(self) -> bool:
         return self.blinking
+    
+
+class BreathingController:
+    def __init__(self):
+        self.timer = 0
+        self.x = 0
+        self.y = 0
+
+    def update(self, delta_time):
+        self.timer += delta_time
+        self.y = math.sin(self.timer * BREATHING_SPEED * math.pi) * BREATHING_HEIGHT
+
+    def get_transform(self) -> tuple[float, float]:
+        return self.x, self.y

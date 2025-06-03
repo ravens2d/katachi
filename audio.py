@@ -4,7 +4,7 @@ import numpy as np
 
 
 VOICE_THRESHOLD = 200
-BUFFER_SIZE = 64
+BUFFER_SIZE = 32
 
 
 class AudioController:

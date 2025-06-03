@@ -6,7 +6,7 @@ import pyaudio
 import numpy as np
 import threading
 
-from transforms import BounceController, BlinkController
+from transforms import BounceController, BlinkController, BreathingController, BREATHING_HEIGHT
 from audio import AudioController, VOICE_THRESHOLD
 
 
@@ -23,7 +23,7 @@ STATES = [
 class Avatar:
     def __init__(self):
         self.x = (WINDOW_WIDTH - WINDOW_WIDTH * AVATAR_SCALE) // 2
-        self.y = (WINDOW_HEIGHT - WINDOW_HEIGHT * AVATAR_SCALE)
+        self.y = (WINDOW_HEIGHT - WINDOW_HEIGHT * AVATAR_SCALE) - BREATHING_HEIGHT
 
         self.images = {}
         for state in STATES:
@@ -32,6 +32,7 @@ class Avatar:
 
         self.bounce = BounceController()
         self.blink = BlinkController()
+        self.breathing = BreathingController()
 
         self.audio = AudioController()
         self.talking = False
@@ -40,6 +41,7 @@ class Avatar:
     def update(self, delta_time):
         self.bounce.update(delta_time)
         self.blink.update(delta_time)
+        self.breathing.update(delta_time)
 
         talking, volume = self.audio.get_data()
         if talking != self.talking and not self.talking:
@@ -59,19 +61,18 @@ class Avatar:
             base_state += '_blink'
 
         bounce_x, bounce_y = self.bounce.get_transform()
-        screen.blit(self.images[base_state], (self.x + bounce_x, self.y + bounce_y))
+        breathing_x, breathing_y = self.breathing.get_transform()
+        screen.blit(self.images[base_state], (self.x + bounce_x + breathing_x, self.y + bounce_y + breathing_y))
         self.draw_ui(screen)
     
     def draw_ui(self, screen):
-        font = pygame.font.Font(None, 36)
+        bar_color = (0, 255, 0)
+        if self.talking:
+            bar_color = (255, 0, 0)
 
-        state = f"Talking: {self.talking}, Blinking: {self.blink.get_blinking()}"
-        text_surface = font.render(state, True, (255, 255, 255))
-        screen.blit(text_surface, (10, 10))
-
-        pygame.draw.rect(screen, (100, 100, 100), (10, 40, 300, 20))
-        pygame.draw.rect(screen, (0, 255, 0), (10, 40, min(self.volume, 1000) / 1000 * 300, 20))
-        pygame.draw.line(screen, (255, 255, 255), (VOICE_THRESHOLD / 1000 * 300, 40), (VOICE_THRESHOLD / 1000 * 300, 60), 2)
+        pygame.draw.rect(screen, (100, 100, 100), (10, 10, 300, 20))
+        pygame.draw.rect(screen, bar_color, (10, 10, min(self.volume, 1000) / 1000 * 300, 20))
+        pygame.draw.line(screen, (255, 255, 255), (VOICE_THRESHOLD / 1000 * 300, 10), (VOICE_THRESHOLD / 1000 * 300, 30), 2)
 
     def stop(self):
         self.audio.stop()
