@@ -35,10 +35,7 @@ class Avatar:
         self.bounce = BounceController()
         self.blink = BlinkController()
         self.breathing = BreathingController()
-
         self.audio = AudioController()
-        self.talking = False
-        self.volume = 0
 
     def update(self, delta_time):
         self.bounce.update(delta_time)
@@ -46,16 +43,12 @@ class Avatar:
         self.breathing.update(delta_time)
 
         self.audio.update()
-        talking, volume = self.audio.get_data()
-        if talking != self.talking and not self.talking:
+        if self.audio.talking and not self.audio.previous_talking:
             self.bounce.trigger()
-
-        self.talking = talking
-        self.volume = volume
 
     def draw(self, screen):
         base_state = ''
-        if self.talking:
+        if self.audio.talking:
             base_state = 'talking'
         else:
             base_state = 'idle'
@@ -70,18 +63,18 @@ class Avatar:
     
     def draw_ui(self, screen):
         bar_color = (0, 255, 0)
-        if self.talking:
+        if self.audio.talking:
             bar_color = (255, 0, 0)
 
         pygame.draw.rect(screen, (100, 100, 100), (10, 10, VOLUME_BAR_WIDTH, VOLUME_BAR_HEIGHT))
-        pygame.draw.rect(screen, bar_color, (10, 10, min(self.volume, VOLUME_MAX) / VOLUME_MAX * VOLUME_BAR_WIDTH, VOLUME_BAR_HEIGHT))
+        pygame.draw.rect(screen, bar_color, (10, 10, min(self.audio.volume, VOLUME_MAX) / VOLUME_MAX * VOLUME_BAR_WIDTH, VOLUME_BAR_HEIGHT))
         pygame.draw.line(screen, (255, 255, 255), (self.audio.threshold / VOLUME_MAX * VOLUME_BAR_WIDTH + 10, 10), (self.audio.threshold / VOLUME_MAX * VOLUME_BAR_WIDTH + 10, 30), 2)
     
     def handle_volume_bar_click(self, mouse_pos):
         mouse_x, mouse_y = mouse_pos
         if 10 <= mouse_x <= 10 + VOLUME_BAR_WIDTH and 10 <= mouse_y <= 10 + VOLUME_BAR_HEIGHT:
             new_threshold = (mouse_x - 10) / VOLUME_BAR_WIDTH * VOLUME_MAX
-            self.audio.set_threshold(new_threshold)
+            self.audio.threshold = new_threshold
 
     def stop(self):
         self.audio.stop()
@@ -119,5 +112,3 @@ if __name__ == '__main__':
         screen.fill((0, 188, 0))
         avatar.draw(screen)
         pygame.display.flip()
-
-        # clock.tick_busy_loop(60)

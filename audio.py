@@ -10,6 +10,8 @@ BUFFER_SIZE = 1024
 class AudioController:
     def __init__(self):
         self.talking = False
+        self.previous_talking = False
+        
         self.volume = 0
         self.threshold = VOICE_THRESHOLD
 
@@ -35,13 +37,8 @@ class AudioController:
                 if mean_squared > 0:
                     self.volume = math.sqrt(mean_squared)
                 
+                self.previous_talking = self.talking
                 self.talking = self.volume > self.threshold
-    
-    def set_threshold(self, new_threshold):
-        self.threshold = new_threshold
-    
-    def get_data(self):
-        return self.talking, self.volume
     
     def stop(self):
         self.stream.stop_stream()
